@@ -5,11 +5,20 @@ import {ThemeProvider} from '@material-ui/core/styles';
 
 import Join from '../User/Join'
 import Lobby from '../Lobby'
+import AdminLobby from '../Admin/Lobby'
 import './App.css';
 import theme from '../../resources/theme'
+import Teams from "../Admin/Teams";
+import RoundOneUser from "../User/RoundOne";
+import RoundTwoUser from "../User/RoundTwo";
+import RoundOneAdmin from "../Admin/RoundOne";
+import RoundTwoAdmin from "../Admin/RoundTwo";
+import {Provider} from "react-redux";
+import store from "../../store/store";
 
 function App() {
     return (
+        <Provider store={store}>
         <ThemeProvider theme={theme}>
             <Router>
                 <Switch>
@@ -24,12 +33,19 @@ function App() {
                            exact={true}>
                     </Route>
                     <Route path={'/lobby'} component={Lobby}/>
+                    <Route path={'/adminLobby'} component={AdminLobby}/>
+                    <Route path={'/round1user'} component={RoundOneUser}/>
+                    <Route path={'/round1admin'} component={RoundOneAdmin}/>
+                    <Route path={'/round2admin'} component={RoundTwoAdmin}/>
+                    <Route path={'/round2user'} component={RoundTwoUser}/>
                     <Route path={'/join'} component={Join}/>
+                    <Route path={'/teams'} component={Teams}/>
+
                 </Switch>
             </Router>
         </ThemeProvider>
+        </Provider>
     )
-
 
     // return (
     //     <Router>

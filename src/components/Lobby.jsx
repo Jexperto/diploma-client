@@ -1,91 +1,93 @@
 import React from 'react';
-import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
-import Cloud from '@material-ui/icons/Cloud';
 import Typography from '@material-ui/core/Typography';
-import {makeStyles} from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import useStyles from "../resources/styles";
+import {Paper} from "@material-ui/core";
+import Avatar from "@material-ui/core/Avatar";
+import AllInclusive from "@material-ui/icons/AllInclusive";
+import {useDispatch, useSelector} from "react-redux";
 
-const useStyles = makeStyles((theme) => ({
-    paper: {
-        marginTop: theme.spacing(8),
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-    },
-    avatar: {
-        margin: theme.spacing(1),
-        backgroundColor: theme.palette.secondary.main,
-    },
-    form: {
-        width: '100%', // Fix IE 11 issue.
-        marginTop: theme.spacing(1),
-    },
-    submit: {
-        margin: theme.spacing(3, 0, 2),
-    },
-}));
+function handleConnect(e){
+    console.log("Connect was clicked");
+
+}
+function handleRules(e){
+    console.log("Rules was clicked");
+}
+function handleExit(e){
+    console.log("Exit was clicked");
+}
+
+
 
 const Lobby = ({history}) => {
     const classes = useStyles();
-    const codeRef = React.useRef()
-    const nickRef = React.useRef()
     return (
-        <Container component="main" maxWidth="xs">
-            <CssBaseline/>
-            <div className={classes.paper}>
-                <Avatar className={classes.avatar}>
-                    <Cloud/>
-                </Avatar>
-                <Typography component="h1" variant="h5">
-                    Подключение
-                </Typography>
+        <div className={classes.center}>
+            <Container component="main" maxWidth="xs" style={{position:"relative", top:100}} >
+                <CssBaseline/>
+                <div className={classes.paper}>
+                    <Avatar className={classes.avatar}>
+                        <AllInclusive/>
+                    </Avatar>
+                    <Typography component="h1" variant="h4">
+                        Лобби
+                    </Typography>
 
-                <form className={classes.form} noValidate onSubmit={
-                    (event => {
-                        event.preventDefault()
-                        history.push(`/connect?code=${codeRef.current.value}&nickname=${nickRef.current.value}`)
-                    })
-                }>
-                    <TextField
-                        inputRef={codeRef}
-                        variant="outlined"
-                        margin="normal"
-                        required
-                        fullWidth
-                        name="code"
-                        label="Код комнаты"
-                        id="code"
-                        autoComplete="current-password"
-                        autoFocus
-                    />
-                    <TextField
-                        inputRef={nickRef}
-                        variant="outlined"
-                        margin="normal"
-                        required
-                        fullWidth
-                        id="nickname"
-                        label="Имя"
-                        name="nickname"
-                        autoComplete="email"
+                    <Paper className={classes.lobbyPaper}>
+                        <Button
+                            fullWidth
+                            size="large"
+                            variant="contained"
+                            color="primary"
+                            className={classes.lobbyButton}
+                            onClick={handleConnect}
+                        >
+                            Подключиться
+                        </Button>
+                        <Button
+                            fullWidth
+                            size="large"
+                            variant="outlined"
+                            color="primary"
+                            className={classes.lobbyButton}
+                            onClick={ (event => {
+                                event.preventDefault()
+                                history.push(`/adminLobby`)
+                            })}
 
-                    />
-                    <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                        className={classes.submit}
-                    >
-                        Подключиться
-                    </Button>
+                        >
+                            Создать комнату
+                        </Button>
 
-                </form>
-            </div>
-        </Container>
+                        <Button
+                            fullWidth
+                            size="large"
+                            color="primary"
+                            variant="outlined"
+                            className={classes.lobbyButton}
+                            onClick={handleRules}
+                        >
+                            Правила
+                        </Button>
+
+                        <Button
+                            fullWidth
+                            size="large"
+                            color="primary"
+                            className={classes.lobbyButton}
+                            onClick={handleExit}
+                        >
+                            Выход
+                        </Button>
+                    </Paper>
+
+                </div>
+            </Container>
+        </div>
+
     );
 }
 export default Lobby;
