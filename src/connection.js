@@ -7,6 +7,7 @@ import {
     roundDispatch,
     errorDispatch,
     teamDispatch,
+    userQuestionDispatch,
     timerDispatch,
     userDispatch,
     userJoinTeamDispatch,
@@ -16,19 +17,18 @@ import {
 class Connection {
     #address;
     #mode;
-    #props
+    #props = {};
+    #secure = false;
+    constructor(dispatch, address = "localhost:8080", secure = false) {
+        this.dispatch = dispatch
+        this.#address = address;
+    }
 
-    constructor(endpoint, dispatch, address = "localhost:8080", secure = false) {
-        let ws = "ws"
-        if (secure)
-            ws = "wss"
-        this.socket = new WebSocket(`${ws}://${address}/${endpoint}`)
+    #setmethods = () => {
         this.socket.onopen = this.onopen
         this.socket.onmessage = this.onmessage
         this.socket.onclose = this.onclose
         this.socket.onerror = this.onerror
-        this.dispatch = dispatch
-        this.#mode = endpoint
     }
 
     onopen = (e) => {
@@ -37,8 +37,11 @@ class Connection {
     onmessage = (e) => {
         const data = e.data;
         const obj = (JSON.parse(data));
-        console.log("Received\n" + obj)
         const store = this.#props[obj.type];
+        if (obj.type==="error"){
+            this.dispatch(errorDispatch(obj.err_desc));
+            return;
+        }
         switch (this.#mode) {
             case "admin": {
                 switch (obj.type) {
@@ -63,27 +66,22 @@ class Connection {
                     }
                     case "pl_con": {
                         this.dispatch(userDispatch(obj.pl_id,obj.nick,obj.team_id));
-                        this.#props[obj.type] = undefined;
                         return;
                     }
                     case "ans": {
                         this.dispatch(currentQuestionDispatch(obj.question_id,JSON.parse(obj.answers),undefined,obj.team_id));
-                        this.#props[obj.type] = undefined;
                         return;
                     }
                     case "tres": {
                         this.dispatch(teamAnswerDispatch(obj.team,obj.question_id,obj.correct));
-                        this.#props[obj.type] = undefined;
                         return;
                     }
                     case "pupd": {
                         this.dispatch(pointsDispatch(obj.team_id,obj.value));
-                        this.#props[obj.type] = undefined;
                         return;
                     }
                     case "rend": {
                         this.dispatch(roundDispatch(-obj.num));
-                        this.#props[obj.type] = undefined;
                         return;
                     }
                 }
@@ -92,38 +90,41 @@ class Connection {
             case "user": {
                 switch (obj.type) {
                     case "join": {
-                        this.dispatch(joinDispatch(store.code, obj.admin_id, store.nick));
+                        this.dispatch(joinDispatch(store.code, obj.pl_id, store.nick));
                         this.#props[obj.type] = undefined;
                         return;
                     }
                     case "get_t": {
-                        this.dispatch(roomDispatch(obj.code, obj.admin_id, store.nick));
-                        this.#props[obj.type] = undefined;
+                        let teams
+                        for (let i = 0; i < obj.team_ids.length; i++) {
+                            teams[obj.team_ids[i]]=obj.team_names[i];
+                        }
+                        this.dispatch(teamDispatch(teams));
                         return;
                     }
                     case "join_t": {
-                        this.dispatch(roomDispatch(obj.code, obj.admin_id, store.nick));
+                        this.dispatch(userJoinTeamDispatch({},obj.team_id));
                         this.#props[obj.type] = undefined;
                         return;
                     }
                     case "wr_qst": {
-                        this.dispatch(roomDispatch(obj.code, obj.admin_id, store.nick));
-                        this.#props[obj.type] = undefined;
+                        let questions;
+                        for (let i = 0; i < obj.question_id.length; i++) {
+                            questions[obj.question_id[i]]=obj.string[i];
+                        }
+                        this.dispatch(userQuestionDispatch(questions));
                         return;
                     }
                     case "timer_elapsed": {
-                        this.dispatch(roomDispatch(obj.code, obj.admin_id, store.nick));
-                        this.#props[obj.type] = undefined;
+                        this.dispatch(timerDispatch(-1));
                         return;
                     }
                     case "rend": {
-                        this.dispatch(roomDispatch(obj.code, obj.admin_id, store.nick));
-                        this.#props[obj.type] = undefined;
+                        this.dispatch(roundDispatch(-obj.num));
                         return;
                     }
                     case "ans": {
-                        this.dispatch(roomDispatch(obj.code, obj.admin_id, store.nick));
-                        this.#props[obj.type] = undefined;
+                        this.dispatch(currentQuestionDispatch(obj.question_id, obj.answers, obj.question));
                         return;
                     }
                 }
@@ -140,11 +141,21 @@ class Connection {
     }
 
     connectUser() {
-
+        const ws = this.#secure ? "wss": "ws";
+        const endpoint = "user";
+        const address = this.#address;
+        this.#mode = endpoint
+        this.socket = new WebSocket(`${ws}://${address}/${endpoint}`)
+        this.#setmethods();
     }
 
     connectAdmin() {
-
+        const ws = this.#secure ? "wss": "ws";
+        const endpoint = "admin";
+        const address = this.#address;
+        this.#mode = endpoint
+        this.socket = new WebSocket(`${ws}://${address}/${endpoint}`)
+        this.#setmethods();
     }
 
     sendMessage(type, props) {
@@ -152,8 +163,8 @@ class Connection {
             case "admin": {
                 switch (type) {
                     case "create": {
-                        this.#props[type] = props
-                        this.socket.send(JSON.stringify({type: type, nick: props.nick}))
+                        this.#props[type] = props;
+                        this.socket.send(JSON.stringify({type: type, nick: props.nick}));
                         return;
                     }
                     case "join": {
@@ -200,8 +211,7 @@ class Connection {
                         return;
                     }
                     case "get_t": {
-                        this.#props[type] = props
-                        this.socket.send(JSON.stringify({type: type,}))
+                        this.socket.send(JSON.stringify({type: type}))
                         return;
                     }
                     case "join_t": {
@@ -222,7 +232,6 @@ class Connection {
                         }))
                         return;
                     }
-
 
                     case "r_ans": {
                         this.#props[type] = props
