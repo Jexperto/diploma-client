@@ -15,7 +15,10 @@ import RoundOneAdmin from "../Admin/RoundOne";
 import RoundTwoAdmin from "../Admin/RoundTwo";
 import {Provider} from "react-redux";
 import store from "../../store/store";
+import Connection from "../../connection";
 
+const websocketConnection = new Connection("admin",store.dispatch);
+window.socket = websocketConnection;
 function App() {
     return (
         <Provider store={store}>

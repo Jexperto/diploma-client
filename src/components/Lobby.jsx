@@ -7,7 +7,6 @@ import useStyles from "../resources/styles";
 import {Paper} from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
 import AllInclusive from "@material-ui/icons/AllInclusive";
-import {useDispatch, useSelector} from "react-redux";
 
 function handleConnect(e){
     console.log("Connect was clicked");

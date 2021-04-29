@@ -1,4 +1,3 @@
-import {act} from "react-dom/test-utils";
 
 const initialState = {
     users: {}, // { userUUID : {username, userTeam} }
@@ -7,14 +6,12 @@ const initialState = {
     code: "",
     teams: {}, // {teamUUID : teamName}
     questions: {}, // {questionUUID : {questionText, answer} }
-    currentQuestion: {}, // {questionUUID, questionText, [id,answer]} -- {teamUUID : {questionUUID, questionText, answers}}
+    currentQuestion: {}, // {questionUUID, questionText, [id,answer]} -- {teamUUID : {questionUUID, answers}}
     timer: 0,
     currentRound: 0,
     error: "",
     points: {}, // {teamUUID: value}
     teamAnswer: {} //{teamUUID,questionUUID, correct}
-
-
 };
 
 const reduce = (state = initialState, action) => {

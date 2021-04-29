@@ -30,7 +30,7 @@ const questionDispatch = (questionUUID, questionText, answer) => {
     };
 }
 
-const currentQuestionDispatch = (questionUUID, questionText, answers, teamUUID) => {
+const currentQuestionDispatch = (questionUUID, answers, questionText="", teamUUID="") => {
     return {
         type: "CURRENT_QUESTION_ADDED",
         questionUUID,
