@@ -1,3 +1,4 @@
+import {act} from "react-dom/test-utils";
 
 const initialState = {
     users: {}, // { userUUID : {username, userTeam} }
@@ -36,6 +37,11 @@ const reduce = (state = initialState, action) => {
                 users: newUsers,
                 currentUser: action.userUUID,
             };
+        case "USER_ROUND1_QUESTION_UPDATED":
+            return {
+                ...state,
+                questions: action.questions
+            };
         case "QUESTION_ADDED":
             const newQuestion = {...state.questions}
             newQuestion[action.questionUUID] = {questionText: action.questionText, answer: action.answer}
@@ -73,12 +79,10 @@ const reduce = (state = initialState, action) => {
                 users: newNewUsers,
             };
 
-        case "TEAM_ADDED":
-            const newTeam = {...state.teams}
-            newTeam[action.teamUUID]=action.teamName
+        case "TEAM_LIST_UPDATED":
             return {
                 ...state,
-                teams: newTeam
+                teams: action.teams
             };
         case "TEAM_JOINED":
             const updateUserTeam = {...state.users,}

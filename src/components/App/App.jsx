@@ -8,7 +8,8 @@ import Lobby from '../Lobby'
 import AdminLobby from '../Admin/Lobby'
 import './App.css';
 import theme from '../../resources/theme'
-import Teams from "../Admin/Teams";
+import AdminTeams from "../Admin/Teams";
+import Teams from "../User/Teams";
 import RoundOneUser from "../User/RoundOne";
 import RoundTwoUser from "../User/RoundTwo";
 import RoundOneAdmin from "../Admin/RoundOne";
@@ -17,8 +18,8 @@ import {Provider} from "react-redux";
 import store from "../../store/store";
 import Connection from "../../connection";
 
-const websocketConnection = new Connection("admin",store.dispatch);
-window.socket = websocketConnection;
+// const websocketConnection = new Connection("admin",store.dispatch);
+// window.socket = websocketConnection;
 function App() {
     return (
         <Provider store={store}>
@@ -42,6 +43,7 @@ function App() {
                     <Route path={'/round2admin'} component={RoundTwoAdmin}/>
                     <Route path={'/round2user'} component={RoundTwoUser}/>
                     <Route path={'/join'} component={Join}/>
+                    <Route path={'/adminTeams'} component={AdminTeams}/>
                     <Route path={'/teams'} component={Teams}/>
 
                 </Switch>

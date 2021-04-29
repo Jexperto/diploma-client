@@ -8,21 +8,12 @@ import Avatar from "@material-ui/core/Avatar";
 import AllInclusive from "@material-ui/icons/AllInclusive";
 import useStyles from "../../resources/styles";
 import {useDispatch} from "react-redux";
-import {roomDispatch} from "../../store/actions/messageActions";
-
-function handleBegin(e){
-    console.log("Begin was clicked");
-}
-function handleAddQuestions(e){
-    console.log("Questions was clicked");
-}
-
-function handleBack(e){
-    console.log("Back was clicked");
-}
-
+import {roomDispatch} from "../../store/actions/messageActions";''
+import websocket from "../../store/websocket"
 
 const Lobby = ({history}) => {
+    const websocket = websocket;
+    websocket.connectAdmin();
     const classes = useStyles();
     const dispatch = useDispatch();
     return (
@@ -58,7 +49,9 @@ const Lobby = ({history}) => {
                         variant="outlined"
                         color="primary"
                         className={classes.lobbyButton}
-                        onClick={handleAddQuestions}
+                        onClick={(event => {
+
+                        })}
 
                     >
                         Добавить вопросы
@@ -69,7 +62,9 @@ const Lobby = ({history}) => {
                         size="large"
                         color="primary"
                         className={classes.lobbyButton}
-                        onClick={handleBack}
+                        onClick={(event => {
+
+                        })}
                     >
                         Назад
                     </Button>
