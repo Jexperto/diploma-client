@@ -2,19 +2,14 @@ import React from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Container from '@material-ui/core/Container';
 import {
-    AppBar,
     Divider,
-    Drawer,
     Fab,
     fade,
     Grid,
-    IconButton,
-    InputBase,
     List,
     ListItem, ListItemIcon, ListItemText,
-    Toolbar
 } from "@material-ui/core";
-import Team from "./Team";
+import Team from "../Team";
 import Typography from "@material-ui/core/Typography";
 import {makeStyles} from "@material-ui/core/styles";
 import {Menu, PlayArrow, Inbox, Mail, Cancel} from "@material-ui/icons";
@@ -99,22 +94,6 @@ const teams = [
 const Teams = ({history}) => {
     const classes = useStyles();
     const code = useSelector(state => state.code);
-    const drawer = (
-        <div>
-            <div className={classes.toolbar}/>
-            <Divider/>
-            <List>
-                <ListItem button key={"Закрыть сессию"}>
-                    <ListItemIcon> <Cancel/></ListItemIcon>
-                    <ListItemText primary={"Закрыть сессию"}/>
-                </ListItem>
-            </List>
-        </div>
-    );
-    const [drawerState, setDrawerState] = React.useState(false);
-    const toggleDrawer = () => {
-        setDrawerState(!drawerState);
-    };
     return (
         <>
             <CssBaseline/>
@@ -126,10 +105,13 @@ const Teams = ({history}) => {
                 </div>
             </ApplicationBar>
 
-            <Grid container spacing={4}>
-                {teams.map((team) => (
-                    <Team key={team.teamUUID} team={team}/>
-                ))}
+
+            <Grid container spacing={4} direction="row">
+                    {teams.map((team) => (
+                        <Grid item xs={12} lg={6}>
+                        <Team key={team.teamUUID} team={team}/>
+                        </Grid>
+                    ))}
             </Grid>
 
             <footer className={classes.footer} style={{left: theme.spacing(3),}}>

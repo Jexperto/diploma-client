@@ -8,12 +8,20 @@ import Typography from '@material-ui/core/Typography';
 import {makeStyles} from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import useStyles from "../../resources/styles";
+import websocket from "../../store/websocket";
+import {useDispatch, connect} from "react-redux";
+import {joinDispatch} from "../../store/actions/messageActions";
+import {Redirect} from "react-router-dom";
 
 
-const Join = ({history}) => {
+const Join = ({history, currentUser}) => {
     const classes = useStyles();
+    const dispatch = useDispatch();
     const codeRef = React.useRef()
     const nickRef = React.useRef()
+    const ws = websocket;
+    if (currentUser)
+        return <Redirect to="/teams"/>;
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline/>
@@ -27,8 +35,10 @@ const Join = ({history}) => {
 
                 <form className={classes.form} noValidate onSubmit={
                     (event => {
-                        event.preventDefault()
-                        history.push(`/connect?code=${codeRef.current.value}&nickname=${nickRef.current.value}`)
+                        event.preventDefault();
+                        if (!ws.getMode()) ws.connectUser();
+                        ws.sendMessage("join", {nick: nickRef.current.value, code: codeRef.current.value})
+                        ws.sendMessage("get_t");
                     })
                 }>
                     <TextField
@@ -68,4 +78,4 @@ const Join = ({history}) => {
         </Container>
     );
 }
-export default Join;
+export default connect(state => {return {currentUser:state.currentUser}})(Join);

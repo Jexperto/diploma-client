@@ -5,9 +5,9 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import {Box, Divider, List, ListItem, ListItemIcon, ListItemText} from "@material-ui/core";
+import {Box, Divider, List, ListItem, ListItemIcon, ListItemText, Toolbar} from "@material-ui/core";
 import {height, width} from "@material-ui/system";
-import theme from "../../resources/theme";
+import theme from "../resources/theme";
 
 const useStyles = makeStyles({
     card: {
@@ -28,22 +28,25 @@ const useStyles = makeStyles({
 
 export default function Team(props) {
     const classes = useStyles();
-    const {team} = props;
-
+    //const team = props;
+    const teamName = props.teamName;
+    const users = props.users;
+    const teamUUID = props.teamUUID;
+    const color = props.color;
+    console.log(teamName,users,teamUUID)
     return (
-        <Grid item xs={12} lg={6}>
             <Card className={classes.card}>
                 <div className={classes.cardDetails}>
                     <CardContent>
                         <Typography component="h1" variant="h5">
-                            {`${team.teamName}`}
+                            {`${teamName}`}
                         </Typography>
-                        <div className={`${classes.square}`} style={{background:team.color}}/>
+                        <div className={`${classes.square}`} style={{background:color}}/>
                         <List aria-label="Team">
-                            {team.users.map((user) => (
-                                <React.Fragment key={user.name+"_id"}>
+                            {users.map((user) => (
+                                <React.Fragment key={user.userUUID}>
                                 <ListItem button divider>
-                                    <ListItemText primary={user.name}/>
+                                    <ListItemText primary={user.username}/>
                                 </ListItem>
                                     <Divider light/>
                                 </React.Fragment>
@@ -51,8 +54,9 @@ export default function Team(props) {
                         </List>
                     </CardContent>
                 </div>
+                {props.children}
             </Card>
-        </Grid>
+
     );
 }
 

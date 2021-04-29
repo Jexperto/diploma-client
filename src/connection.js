@@ -19,10 +19,15 @@ class Connection {
     #mode;
     #props = {};
     #secure = false;
+    #queue = [];
     constructor(dispatch, address = "localhost:8080", secure = false) {
         this.dispatch = dispatch
         this.#address = address;
     }
+
+    getMode(){
+        return this.#mode;
+    };
 
     #setmethods = () => {
         this.socket.onopen = this.onopen
@@ -33,6 +38,9 @@ class Connection {
 
     onopen = (e) => {
         console.log("WebSocket is open now with address: " + this.socket.url);
+        this.#queue.forEach((value)=>{
+            this.sendMessage(value.type, value.props)
+        })
     }
     onmessage = (e) => {
         const data = e.data;
@@ -95,7 +103,7 @@ class Connection {
                         return;
                     }
                     case "get_t": {
-                        let teams
+                        let teams = {};
                         for (let i = 0; i < obj.team_ids.length; i++) {
                             teams[obj.team_ids[i]]=obj.team_names[i];
                         }
@@ -159,6 +167,10 @@ class Connection {
     }
 
     sendMessage(type, props) {
+        if (this.socket.readyState!==1){
+            this.#queue.push({type,props});
+            return;
+        }
         switch (this.#mode) {
             case "admin": {
                 switch (type) {
