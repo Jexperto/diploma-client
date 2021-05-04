@@ -15,15 +15,23 @@ const roomDispatch = (code, adminUUID, adminName) => {
         adminName,
     };
 }
-const joinDispatch = (code, userUUID, username) => {
-    console.log(code, userUUID, username);
+const joinDispatch = (code, userUUID, userName) => {
+    console.log(code, userUUID, userName);
     return {
         type: "ROOM_JOINED",
         code,
         userUUID,
-        username,
+        userName,
     };
 }
+const initQuestionSetDispatch = (questions) => {
+    console.log(questions);
+    return {
+        type: "INITIAL_QUESTIONS_SET",
+        questions,
+    };
+}
+
 const questionDispatch = (questionUUID, questionText, answer) => {
     console.log(questionUUID, questionText, answer);
     return {
@@ -63,14 +71,14 @@ const roundDispatch = (number) => {
     };
 }
 
-const userDispatch = (userUUID, username, team) => {
-    console.log(userUUID, username, team);
+const userDispatch = (userUUID, userName, teamUUID) => {
+    console.log(userUUID, userName, teamUUID);
 
     return {
         type: "USER_ADDED",
         userUUID,
-        username,
-        team,
+        userName,
+        teamUUID,
     }
 }
 
@@ -82,6 +90,15 @@ const teamDispatch = (teams) => {
         teams,
     }
 }
+
+const setUserJoinTeamDispatch = (users) => {
+
+    return {
+        type: "USER_TEAMS_SET",
+        users
+    }
+}
+
 
 const userJoinTeamDispatch = (userUUID, teamUUID) => {
     console.log(userUUID, teamUUID);
@@ -134,5 +151,7 @@ export {
     timerDispatch,
     userDispatch,
     userJoinTeamDispatch,
-    teamAnswerDispatch
+    teamAnswerDispatch,
+    initQuestionSetDispatch,
+    setUserJoinTeamDispatch,
 }

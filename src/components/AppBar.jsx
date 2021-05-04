@@ -14,7 +14,8 @@ import {Cancel, Menu} from "@material-ui/icons";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Typography from "@material-ui/core/Typography";
 import {makeStyles} from "@material-ui/core/styles";
-
+import { useHistory } from "react-router-dom";
+import {getWebSocket} from "../store/websocket";
 const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
@@ -36,13 +37,15 @@ const useStyles = makeStyles((theme) => ({
 
 
 const ApplicationBar = (props) => {
+    let history = useHistory();
     const classes = useStyles();
+    const websocket = getWebSocket();
     const drawer = (
         <div>
             <div className={classes.toolbar}/>
             <Divider/>
             <List>
-                <ListItem button key={"Закрыть сессию"}>
+                <ListItem button key={"Закрыть сессию"} onClick={(event) => history.push("/")}>
                     <ListItemIcon> <Cancel/></ListItemIcon>
                     <ListItemText primary={"Закрыть сессию"}/>
                 </ListItem>

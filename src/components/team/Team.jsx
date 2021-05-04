@@ -7,7 +7,7 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import {Box, Divider, List, ListItem, ListItemIcon, ListItemText, Toolbar} from "@material-ui/core";
 import {height, width} from "@material-ui/system";
-import theme from "../resources/theme";
+import theme from "../../resources/theme";
 
 const useStyles = makeStyles({
     card: {
@@ -33,7 +33,6 @@ export default function Team(props) {
     const users = props.users;
     const teamUUID = props.teamUUID;
     const color = props.color;
-    console.log(teamName,users,teamUUID)
     return (
             <Card className={classes.card}>
                 <div className={classes.cardDetails}>
@@ -46,7 +45,7 @@ export default function Team(props) {
                             {users.map((user) => (
                                 <React.Fragment key={user.userUUID}>
                                 <ListItem button divider>
-                                    <ListItemText primary={user.username}/>
+                                    <ListItemText primary={user.userName}/>
                                 </ListItem>
                                     <Divider light/>
                                 </React.Fragment>

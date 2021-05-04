@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import {makeStyles} from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import useStyles from "../../resources/styles";
-import websocket from "../../store/websocket";
+import {getWebSocket} from "../../store/websocket";
 import {useDispatch, connect} from "react-redux";
 import {joinDispatch} from "../../store/actions/messageActions";
 import {Redirect} from "react-router-dom";
@@ -19,11 +19,12 @@ const Join = ({history, currentUser}) => {
     const dispatch = useDispatch();
     const codeRef = React.useRef()
     const nickRef = React.useRef()
-    const ws = websocket;
+    let ws = getWebSocket();
     if (currentUser)
         return <Redirect to="/teams"/>;
     return (
-        <Container component="main" maxWidth="xs">
+        <div className={classes.center}>
+        <Container component="main" maxWidth="xs" style={{position: "relative", top: 100}}>
             <CssBaseline/>
             <div className={classes.paper}>
                 <Avatar className={classes.avatar}>
@@ -76,6 +77,7 @@ const Join = ({history, currentUser}) => {
                 </form>
             </div>
         </Container>
+        </div>
     );
 }
 export default connect(state => {return {currentUser:state.currentUser}})(Join);

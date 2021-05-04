@@ -1,12 +1,12 @@
 import {act} from "react-dom/test-utils";
 
 const initialState = {
-    users: {}, // { userUUID : {username, userTeam} }
+    users: {}, // { userUUID : {userName, teamUUID} }
     admin: {}, // {adminUUID, adminName}
     currentUser: "", //userUUID
     code: "",
     teams: {}, // {teamUUID : teamName}
-    questions: {}, // {questionUUID : {questionText, answer} }
+    questions: {}, // {questionUUID : {questionText, answer} }  -- [{question: "", answer:""}]
     currentQuestion: {}, // {questionUUID, questionText, [id,answer]} -- {teamUUID : {questionUUID, answers}}
     timer: 0,
     currentRound: 0,
@@ -30,7 +30,7 @@ const reduce = (state = initialState, action) => {
             };
         case "ROOM_JOINED":
             const newUsers = {...state.users,}
-            newUsers[action.userUUID] = {username: action.username}
+            newUsers[action.userUUID] = {userName: action.userName}
             return {
                 ...state,
                 code: action.code,
@@ -38,6 +38,12 @@ const reduce = (state = initialState, action) => {
                 currentUser: action.userUUID,
             };
         case "USER_ROUND1_QUESTION_UPDATED":
+            return {
+                ...state,
+                questions: action.questions
+            };
+
+        case "INITIAL_QUESTIONS_SET":
             return {
                 ...state,
                 questions: action.questions
@@ -73,7 +79,8 @@ const reduce = (state = initialState, action) => {
             };
         case "USER_ADDED":
             const newNewUsers = {...state.users,}
-            newNewUsers[action.userUUID] = {username: action.username, userTeam: action.team}
+            newNewUsers[action.userUUID] = {userName: action.userName, teamUUID: action.teamUUID}
+
             return {
                 ...state,
                 users: newNewUsers,
@@ -84,9 +91,19 @@ const reduce = (state = initialState, action) => {
                 ...state,
                 teams: action.teams
             };
+        case "USER_TEAMS_SET":
+            const userTeams = {}
+            action.users.forEach((user)=>{
+                userTeams[user.pl_id] = {userName: user.nick, teamUUID: user.team_id}
+            })
+            return {
+                ...state,
+                users: userTeams,
+            };
         case "TEAM_JOINED":
             const updateUserTeam = {...state.users,}
-            updateUserTeam[action.userUUID] = {userTeam: action.userTeam}
+            const userName = updateUserTeam[action.userUUID].userName
+            updateUserTeam[action.userUUID] = {userName: userName,teamUUID: action.teamUUID}
             return {
                 ...state,
                 users: updateUserTeam,

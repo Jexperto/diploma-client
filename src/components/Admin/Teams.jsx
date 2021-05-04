@@ -9,91 +9,42 @@ import {
     List,
     ListItem, ListItemIcon, ListItemText,
 } from "@material-ui/core";
-import Team from "../Team";
+import Team from "../team/Team";
 import Typography from "@material-ui/core/Typography";
 import {makeStyles} from "@material-ui/core/styles";
-import {Menu, PlayArrow, Inbox, Mail, Cancel} from "@material-ui/icons";
+import {Menu, PlayArrow, Inbox, Mail, Cancel, Add} from "@material-ui/icons";
 import theme from "../../resources/theme";
 import Button from "@material-ui/core/Button";
 import ApplicationBar from "../AppBar";
 import {useSelector} from "react-redux";
+import {getWebSocket} from "../../store/websocket";
+import {teamsStyles} from "../team/styles";
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-        flexGrow: 1,
-        marginBottom: 10,
-    },
-    menuButton: {
-        marginRight: theme.spacing(2),
-    },
-    title: {
-        flexGrow: 1,
-        display: 'none',
-        [theme.breakpoints.up('sm')]: {
-            display: 'block',
-        },
-    },
-    code: {
-        position: 'relative',
-        borderRadius: theme.shape.borderRadius,
-        backgroundColor: fade(theme.palette.common.white, 0.15),
-        padding: theme.spacing(1),
-        marginLeft: 0,
-        width: '100%',
-        [theme.breakpoints.up('sm')]: {
-            marginLeft: theme.spacing(1),
-            width: 'auto',
-        },
-    },
-    footer: {
-        margin: theme.spacing(1), // You might not need this now
-        position: "fixed",
-        bottom: theme.spacing(2),
-
-    },
-    toolbar: theme.mixins.toolbar,
-}));
-
-const teams = [
-    {
-        teamUUID: "id1",
-        teamName: "Team1",
-        users: [
-            {name: "Player1"},
-            {name: "Player2"},
-            {name: "Player3"},
-            {name: "Player4"}
-        ],
-        color: 'blue',
-    },
-    {
-        teamUUID: "id2",
-        teamName: "Team2",
-        users: [
-            {name: "LPlayer1"},
-            {name: "LPlayer2"},
-            {name: "LPlayer3"},
-            {name: "LPlayer4"}
-        ],
-        color: 'red',
-    },
-    {
-        teamUUID: "id3",
-        teamName: "Team3",
-        users: [
-            {name: "RPlayer1"},
-            {name: "RPlayer2"},
-            {name: "RPlayer3"},
-            {name: "RPlayer4"}
-        ],
-        color: 'orange',
-    },
-
+const useStyles = teamsStyles();
+const colors = [
+    "blue", "red", "orange", "purple"
 ];
 
 const Teams = ({history}) => {
     const classes = useStyles();
+    const ws = getWebSocket();
+    const selTeams = useSelector(state => state.teams);
+    const selUsers = useSelector(state => state.users);
     const code = useSelector(state => state.code);
+    let tempTeams = {}
+
+    for (let key in selTeams) {
+        tempTeams[key] = {teamName: selTeams[key], users: []}
+    }
+    for (let key in selUsers) {
+        const team = tempTeams[selUsers[key].teamUUID];
+        if (team)
+            team.users.push({userName: selUsers[key].userName, userUUID: key, key: key})
+    }
+    const teamsArray = Object.keys(tempTeams).map((key) => {
+        return {teamUUID: key, teamName: tempTeams[key].teamName, users: tempTeams[key].users}
+    });
+   // console.log(teamsArray.sort((a, b) => { return (a.teamUUID<b.teamUUID?-1:1)}))
     return (
         <>
             <CssBaseline/>
@@ -106,12 +57,14 @@ const Teams = ({history}) => {
             </ApplicationBar>
 
 
+
             <Grid container spacing={4} direction="row">
-                    {teams.map((team) => (
-                        <Grid item xs={12} lg={6}>
-                        <Team key={team.teamUUID} team={team}/>
-                        </Grid>
-                    ))}
+                {teamsArray.map((data,index) => (
+                    <Grid item xs={12} lg={6} key={data.teamUUID}>
+                        <Team teamUUID={data.teamUUID} teamName={`${data.teamName}`} users={data.users} color={colors[index]}>
+                        </Team>
+                    </Grid>
+                ))}
             </Grid>
 
             <footer className={classes.footer} style={{left: theme.spacing(3),}}>
@@ -123,7 +76,10 @@ const Teams = ({history}) => {
             </footer>
             <footer className={classes.footer} style={{right: theme.spacing(3),}}>
                 <Container>
-                    <Fab color="primary" aria-label="play">
+                    <Fab color="primary" aria-label="play" onClick={(event => {
+                        ws.sendMessage("start", {num:1, timer:20})
+                        history.push("/round1admin") //TODO: Track empty teams
+                    })}>
                         <PlayArrow/>
                     </Fab>
                 </Container>

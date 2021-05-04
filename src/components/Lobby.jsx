@@ -42,7 +42,9 @@ const Lobby = ({history}) => {
                             variant="contained"
                             color="primary"
                             className={classes.lobbyButton}
-                            onClick={handleConnect}
+                            onClick={()=>{
+                                history.push("/join")
+                            }}
                         >
                             Подключиться
                         </Button>

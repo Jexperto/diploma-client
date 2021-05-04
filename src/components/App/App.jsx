@@ -13,28 +13,22 @@ import Teams from "../User/Teams";
 import RoundOneUser from "../User/RoundOne";
 import RoundTwoUser from "../User/RoundTwo";
 import RoundOneAdmin from "../Admin/RoundOne";
+import AddQuestions from "../Admin/AddQuestions";
 import RoundTwoAdmin from "../Admin/RoundTwo";
 import {Provider} from "react-redux";
 import store from "../../store/store";
 import Connection from "../../connection";
 
 // const websocketConnection = new Connection("admin",store.dispatch);
-// window.socket = websocketConnection;
+ window.store = store;
 function App() {
     return (
         <Provider store={store}>
         <ThemeProvider theme={theme}>
             <Router>
                 <Switch>
-                    <Route path={"/"} render={({}) => {
-                        return (<div className="App">
-                            <h2>
-                                This is Homepage!
-                            </h2>
-                            <Link to={"/lobby"}>ToAuth</Link>
-                        </div>)
-                    }}
-                           exact={true}>
+                    <Route exact path="/">
+                        <Redirect to="/lobby" />
                     </Route>
                     <Route path={'/lobby'} component={Lobby}/>
                     <Route path={'/adminLobby'} component={AdminLobby}/>
@@ -43,6 +37,7 @@ function App() {
                     <Route path={'/round2admin'} component={RoundTwoAdmin}/>
                     <Route path={'/round2user'} component={RoundTwoUser}/>
                     <Route path={'/join'} component={Join}/>
+                    <Route path={'/AddQuestions'} component={AddQuestions}/>
                     <Route path={'/adminTeams'} component={AdminTeams}/>
                     <Route path={'/teams'} component={Teams}/>
 
