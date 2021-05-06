@@ -12,6 +12,7 @@ import AdminTeams from "../Admin/Teams";
 import Teams from "../User/Teams";
 import RoundOneUser from "../User/RoundOne";
 import RoundTwoUser from "../User/RoundTwo";
+import UserFinish from "../User/Finish";
 import RoundOneAdmin from "../Admin/RoundOne";
 import AddQuestions from "../Admin/AddQuestions";
 import RoundTwoAdmin from "../Admin/RoundTwo";
@@ -40,6 +41,7 @@ function App() {
                     <Route path={'/AddQuestions'} component={AddQuestions}/>
                     <Route path={'/adminTeams'} component={AdminTeams}/>
                     <Route path={'/teams'} component={Teams}/>
+                    <Route path={'/userFinish'} component={UserFinish}/>
 
                 </Switch>
             </Router>

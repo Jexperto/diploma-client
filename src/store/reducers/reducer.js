@@ -6,7 +6,7 @@ const initialState = {
     currentUser: "", //userUUID
     code: "",
     teams: {}, // {teamUUID : teamName}
-    questions: {}, // {questionUUID : {questionText, answer} }  -- [{question: "", answer:""}]
+    questions: {}, // {questionUUID : {questionText, answer} }  -- [{question_id: "", string:""}]
     currentQuestion: {}, // {questionUUID, questionText, [id,answer]} -- {teamUUID : {questionUUID, answers}}
     timer: 0,
     currentRound: 0,

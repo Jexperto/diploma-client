@@ -12,6 +12,8 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import {width} from "@material-ui/system";
 import ApplicationBar from "../AppBar";
+import {useSelector} from "react-redux";
+import {getWebSocket} from "../../store/websocket";
 
 const useStyles = makeStyles((theme) => ({
     progress: {
@@ -138,6 +140,9 @@ const TeamDetails = ({team, progress}) => {
 const RoundOne = ({history}) => {
     const classes = useStyles();
     const [progress, setProgress] = React.useState(10);
+    //const currentQuestion = useSelector(state => state.currentQuestion)
+    window.startRound = (num,timer) => {getWebSocket().sendMessage("start", {num:num, timer:timer})};
+
 
     React.useEffect(() => {
         const timer = setInterval(() => {

@@ -24,7 +24,7 @@ function handleExit(e){
 const Lobby = ({history}) => {
     const classes = useStyles();
     return (
-        <div className={classes.center}>
+        <div className={classes.top}>
             <Container component="main" maxWidth="xs" style={{position:"relative", top:100}} >
                 <CssBaseline/>
                 <div className={classes.paper}>

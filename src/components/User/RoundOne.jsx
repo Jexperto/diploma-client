@@ -3,32 +3,47 @@ import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
-import {Paper} from "@material-ui/core";
+import {CircularProgress, Paper} from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
 import AllInclusive from "@material-ui/icons/AllInclusive";
 import useStyles from "../../resources/styles";
 import TextField from "@material-ui/core/TextField";
-
-function handleConnect(e){
-    console.log("Connect was clicked");
-
-}
-function handleRools(e){
-    console.log("Rools was clicked");
-}
-function handleExit(e){
-    console.log("Exit was clicked");
-}
-
-
+import {useSelector} from "react-redux";
+import {getWebSocket} from "../../store/websocket";
+import {Redirect} from "react-router-dom";
 
 const RoundOne = ({history}) => {
     const classes = useStyles();
-    const codeRef = React.useRef()
-    const nickRef = React.useRef()
+    const ansRef = React.useRef();
+    const ws = getWebSocket();
+    const qta = useSelector(state => state.questions); //questionsToAnswer
+    const player = useSelector(state => state.currentUser);
+    const round = useSelector(state => state.currentRound);
+    const [count, setCount] = React.useState(0);
+    if (!Array.isArray(qta)){
+        return(
+            <div className={classes.center}>
+                <CircularProgress color={"primary" }/>
+            </div>
+        )
+    }
+    if (round<0){
+        return(
+            <Redirect to={"/round2user"}/>
+        )
+    }
+    if (count >= qta.length){
+        return (
+            <div className={classes.center}>
+                <CircularProgress color={"primary" }/>
+            </div>
+        );
+    }
+    const qID = qta[count].question_id;
+    const qText = qta[count].string;
     return (
-        <div className={classes.center}>
-            <Container component="main" maxWidth="xs" style={{position:"relative", top:100}} >
+        <div className={classes.top}>
+            <Container component="main" maxWidth="xs" style={{position: "relative", top: 100}}>
                 <CssBaseline/>
                 <div className={classes.paper}>
                     <Avatar className={classes.avatar}>
@@ -42,18 +57,18 @@ const RoundOne = ({history}) => {
                     </Typography>
                     <Paper className={classes.lobbyPaper}>
                         <Typography component="h1" variant="h6">
-                            Очень длинный ответ, который мне нужно протестировать. Ну а впрочем, я просто хочу сдать этот грёбаный диплом!!!
+                            {qText}
                         </Typography>
                         <TextField
-                            inputRef={codeRef}
+                            inputRef={ansRef}
                             variant="outlined"
                             margin="normal"
                             required
                             fullWidth
                             autoComplete="off"
-                            name="code"
+                            name="answer"
                             label="Ответ"
-                            id="code"
+                            id="answer"
                             autoFocus
                         />
                         <Button
@@ -61,12 +76,14 @@ const RoundOne = ({history}) => {
                             size="large"
                             color="primary"
                             className={classes.lobbyButton}
-                            onClick={handleExit}
-                        >
+                            onClick={() => {
+                                ws.sendMessage("wr_ans", {pl_id: player, question_id: qID, string: ansRef.current.value ? ansRef.current.value: "" })
+                                setCount(count+1)
+                                ansRef.current.value=""
+                            }}>
                             Подтвердить
                         </Button>
                     </Paper>
-
                 </div>
             </Container>
         </div>

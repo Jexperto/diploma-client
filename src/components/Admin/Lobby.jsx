@@ -37,7 +37,7 @@ const Lobby = ({history, code, teams}) => {
     if (Object.keys(teams).length > 0)
         return <Redirect to="/adminTeams"/>;
     return (
-        <div className={classes.center}>
+        <div className={classes.top}>
             <Container component="main" maxWidth="xs" style={{position: "relative", top: 100}}>
                 <CssBaseline/>
                 <div className={classes.paper}>

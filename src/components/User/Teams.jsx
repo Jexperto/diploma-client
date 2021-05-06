@@ -11,6 +11,7 @@ import ApplicationBar from "../AppBar";
 import {useSelector} from "react-redux";
 import {getWebSocket} from "../../store/websocket";
 import {teamsStyles} from "../team/styles";
+import {Redirect} from "react-router-dom";
 
 const useStyles = teamsStyles();
 const colors = [
@@ -21,6 +22,7 @@ const colors = [
 const Teams = ({history}) => {
     const classes = useStyles();
     const ws = getWebSocket();
+    const selRound = useSelector(state => state.currentRound)
     const selTeams = useSelector(state => state.teams);
     const selUsers = useSelector(state => state.users);
     const code = useSelector(state => state.code);
@@ -39,6 +41,9 @@ const Teams = ({history}) => {
     });
     //console.log(teamsArray.sort((a, b) => { return (a.teamUUID<b.teamUUID?-1:1)}))
 
+    if (selRound>0){
+        return <Redirect to={"/round1user"}/>
+    }
 
     return (
         <>
@@ -53,8 +58,8 @@ const Teams = ({history}) => {
 
             <Grid container spacing={4} direction="row">
                 {teamsArray.map((data, index) => (
-                    <Grid item xs={12} lg={6}>
-                        <Team key={data.teamUUID} teamUUID={data.teamUUID} teamName={`${data.teamName}`}
+                    <Grid item xs={12} lg={6} key={data.teamUUID}>
+                        <Team teamUUID={data.teamUUID} teamName={`${data.teamName}`}
                               users={data.users} color={colors[index]}>
                             <Button aria-label="join" onClick={() =>
                                 ws.sendMessage("join_t",{team_id:data.teamUUID})
