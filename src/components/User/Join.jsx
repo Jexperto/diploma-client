@@ -23,7 +23,7 @@ const Join = ({history, currentUser}) => {
     if (currentUser)
         return <Redirect to="/teams"/>;
     return (
-        <div className={classes.center}>
+        <div className={classes.top}>
         <Container component="main" maxWidth="xs" style={{position: "relative", top: 100}}>
             <CssBaseline/>
             <div className={classes.paper}>

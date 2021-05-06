@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.background.paper,
         padding: theme.spacing(6),
     },
-    center: {
+    top: {
         position:"absolute",
         top:0,
         bottom:0,
@@ -71,8 +71,17 @@ const useStyles = makeStyles((theme) => ({
         justifyContent:'center',
         alignItems:"top",
 },
-
-
+    center: {
+        position:"absolute",
+        top:0,
+        bottom:0,
+        left:0,
+        right:0,
+        overflow:"auto",
+        display: 'flex',
+        justifyContent:'center',
+        alignItems:"center",
+    },
 }));
 
 export default useStyles;

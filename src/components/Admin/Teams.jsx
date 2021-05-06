@@ -19,6 +19,7 @@ import ApplicationBar from "../AppBar";
 import {useSelector} from "react-redux";
 import {getWebSocket} from "../../store/websocket";
 import {teamsStyles} from "../team/styles";
+import {Redirect} from "react-router-dom";
 
 const useStyles = teamsStyles();
 const colors = [
@@ -31,6 +32,7 @@ const Teams = ({history}) => {
     const selTeams = useSelector(state => state.teams);
     const selUsers = useSelector(state => state.users);
     const code = useSelector(state => state.code);
+    const selRound = useSelector(state => state.currentRound)
     let tempTeams = {}
 
     for (let key in selTeams) {
@@ -45,6 +47,10 @@ const Teams = ({history}) => {
         return {teamUUID: key, teamName: tempTeams[key].teamName, users: tempTeams[key].users}
     });
    // console.log(teamsArray.sort((a, b) => { return (a.teamUUID<b.teamUUID?-1:1)}))
+    if (selRound>0){
+        return <Redirect to={"/round1admin"}/>
+    }
+
     return (
         <>
             <CssBaseline/>

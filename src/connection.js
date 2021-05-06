@@ -51,8 +51,7 @@ class Connection {
         const data = e.data;
         const obj = (JSON.parse(data));
         const store = this.#props[obj.type];
-        console.log("Message")
-        console.log(obj)
+        console.log("Received:", obj)
         if (obj.type === "error") {
             this.dispatch(errorDispatch(obj.err_desc));
             return;
@@ -94,7 +93,7 @@ class Connection {
                         return;
                     }
                     case "ans": {
-                        this.dispatch(currentQuestionDispatch(obj.question_id, JSON.parse(obj.answers), undefined, obj.team_id));
+                        this.dispatch(currentQuestionDispatch(obj.question_id, obj.answers, undefined, obj.team_id));
                         return;
                     }
                     case "tres": {
@@ -127,8 +126,8 @@ class Connection {
                     }
                     case "get_t": {
                         let teams = {};
-                        for (let i = 0; i < obj.team_ids.length; i++) {
-                            teams[obj.team_ids[i]] = obj.team_names[i];
+                        for (let i = 0; i < obj.teams.length; i++) {
+                            teams[obj.teams[i].team_id] = obj.teams[i].team_name;
                         }
                         this.dispatch(teamDispatch(teams));
                         return;
@@ -139,15 +138,20 @@ class Connection {
                         return;
                     }
                     case "wr_qst": {
-                        let questions;
-                        for (let i = 0; i < obj.question_id.length; i++) {
-                            questions[obj.question_id[i]] = obj.string[i];
-                        }
-                        this.dispatch(userQuestionDispatch(questions));
+                        // let questions = [];
+                        // for (let i = 0; i < obj.questions.length; i++) {
+                        //     questions[obj.questions[i].question_id] = obj.questions[i].string;
+                        // }
+                        this.dispatch(userQuestionDispatch(obj.questions));
                         return;
                     }
                     case "timer_elapsed": {
                         this.dispatch(timerDispatch(-1));
+                        return;
+                    }
+                    case "start": {
+                        this.dispatch(roundDispatch(obj.num));
+                        this.#props[obj.type] = undefined;
                         return;
                     }
                     case "rend": {
@@ -209,6 +213,7 @@ class Connection {
             this.#queue.push({type, props});
             return;
         }
+        console.log("Sent:", type, props)
         switch (this.#mode) {
             case "admin": {
                 switch (type) {
