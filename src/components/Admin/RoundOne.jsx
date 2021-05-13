@@ -1,8 +1,7 @@
-import React, {Component} from 'react';
+import React from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Container from '@material-ui/core/Container';
 import {
-    Box, CircularProgress,
+    Box, CircularProgress, Divider,
     fade, Grid, LinearProgress, Toolbar,
 } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
@@ -11,11 +10,15 @@ import theme from "../../resources/theme";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import {width} from "@material-ui/system";
+import useStyles from "../../resources/styles";
 import ApplicationBar from "../AppBar";
 import {useSelector} from "react-redux";
-import {getWebSocket} from "../../store/websocket";
+import websocket, {getWebSocket} from "../../store/websocket";
+import {Redirect} from "react-router-dom";
+import {useColors} from "../../resources/colors";
+import {isEmpty} from "../../utils/functions";
 
-const useStyles = makeStyles((theme) => ({
+const round1Styles = makeStyles((theme) => ({
     progress: {
         flexGrow: 1
     },
@@ -42,53 +45,14 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const useStyles2 = makeStyles((theme) => ({
+const useTeamColorStyles = makeStyles((theme) => ({
     colorPrimary: {
-        backgroundColor:  props => fade(props.color,0.15)
+        backgroundColor: props => fade(props.color, 0.15)
     },
     barColorPrimary: {
         backgroundColor: props => props.color
     }
 }));
-
-
-const teams = [
-    {
-        teamUUID: "id1",
-        teamName: "Team1",
-        users: [
-            {name: "Player1"},
-            {name: "Player2"},
-            {name: "Player3"},
-            {name: "Player4"}
-        ],
-        color: "rgb(0,245,245)",
-    },
-    {
-        teamUUID: "id2",
-        teamName: "Team2",
-        users: [
-            {name: "LPlayer1"},
-            {name: "LPlayer2"},
-            {name: "LPlayer3"},
-            {name: "LPlayer4"}
-        ],
-        color: "rgb(255,0,0)",
-    },
-    {
-        teamUUID: "id3",
-        teamName: "Team3",
-        users: [
-            {name: "RPlayer1"},
-            {name: "RPlayer2"},
-            {name: "RPlayer3"},
-            {name: "RPlayer4"}
-        ],
-        color: "rgb(255,89,2)",
-    },
-
-];
-
 
 function Timer(props) {
     return (
@@ -104,64 +68,104 @@ function Timer(props) {
                 alignItems="center"
                 justifyContent="center"
             >
-                <Typography style={{fontSize:props.size/4}}  variant="caption" component="div" color="textSecondary">{`${Math.round(
-                    props.value,
+                <Typography style={{fontSize: props.size / 4}} variant="caption" component="div"
+                            color="textSecondary">{`${Math.round(
+                    props.time,
                 )}`}</Typography>
             </Box>
         </Box>
     );
 }
 
-const TeamDetails = ({team, progress}) => {
-    const classes = useStyles2({color: team.color});
+const TeamDetails = ({team, maxProgress, progress, color}) => {
+    let value;
+    if (!maxProgress || !progress)
+         value = 0;
+else
+         value = ((progress / maxProgress) ) * 100
+
+
+    //const colorStyles = useStyles2({color: team.color || "rgb(189,12,150)"});
+    const classes = round1Styles();
     return (
         <CardContent>
             <Typography component="h1" variant="h5">
                 {`${team.teamName}`}
             </Typography>
-            <div className={`${classes.square}`} style={{background: team.color}}/>
+           {/*<div className={`${classes.square}`} style={{background: color}}/>*/}
+
             <Box display="flex" alignItems="center">
                 <Box width="100%" mr={1}>
                     <LinearProgress classes={{
-                        colorPrimary: classes.colorPrimary,
-                        barColorPrimary: classes.barColorPrimary
-                    }} variant="determinate" value={progress}/>
+                        colorPrimary: useTeamColorStyles({color:color}).colorPrimary,
+                        barColorPrimary:  useTeamColorStyles({color:color}).barColorPrimary
+                    }} variant="determinate" value={value ?? 100}/>
                 </Box>
                 <Box minWidth={35}>
                     <Typography variant="body2" color="textSecondary">{`${Math.round(
-                        progress,
+                        value ?? 100,
                     )}%`}</Typography>
                 </Box>
             </Box>
         </CardContent>
     )
 }
-
+const factor = 1;
 const RoundOne = ({history}) => {
-    const classes = useStyles();
-    const [progress, setProgress] = React.useState(10);
+    const classes = round1Styles();
+    const globalStyles = useStyles();
+    const colors = useColors();
+    const ws = getWebSocket();
     //const currentQuestion = useSelector(state => state.currentQuestion)
-    window.startRound = (num,timer) => {getWebSocket().sendMessage("start", {num:num, timer:timer})};
-
-
+    //window.startRound = (num, timer) => {getWebSocket().sendMessage("start", {num: num, timer: timer})};
+    const questions = useSelector(state => state.questions);
+    const teamAns = useSelector(state => state.teamAnswers);
+    const round = useSelector(state => state.currentRound);
+    const teams = useSelector(state => state.teams);
+    const maxAns = useSelector(state => state.maxAns);
+    const timer = useSelector(state => state.timer);
+    const teamsArray = Object.keys(teams).map((key) => {
+        return {teamUUID: key, teamName: teams[key]}
+    }).sort((a, b) => { return (a.teamUUID<b.teamUUID?-1:1)});
+    const progressCoefficient = React.useMemo(() => timer / 100.0, [timer]);
+    const increment = React.useMemo(() => 1 / progressCoefficient / factor, [progressCoefficient]);
+    const [timerProgress, setTimerProgress] = React.useState(100);
     React.useEffect(() => {
-        const timer = setInterval(() => {
-            setProgress((prevProgress) => (prevProgress >= 100 ? 10 : prevProgress + 10));
-        }, 800);
-        return () => {
-            clearInterval(timer);
-        };
-    }, []);
+        const interval = setInterval(() => {
+            setTimerProgress((progress) => (progress - increment));
+        }, 1000 / factor);
+        setTimeout(() => {
+            clearInterval(interval);
+        }, timer * 1000)
+    }, [timer,increment]);
+
+
+    if (round < 0 || isEmpty(maxAns)) {
+        if (round === -1){
+            ws.sendMessage("get_twq")
+            return (<Redirect to={"/intermission"}/>);}
+        return (
+            <div className={globalStyles.center}>
+                <CircularProgress color={"primary"}/>
+            </div>
+        );
+    }
+
     return (
         <>
             <CssBaseline/>
             <ApplicationBar title={"Подготовка командами ответов"}/>
             <Grid container spacing={4}>
-                {teams.map((team) => (
+                {teamsArray.map((team,index) => (
+                    // {teams.map((team) => (
                     <Grid key={team.teamUUID} item xs={12} lg={6}>
                         <Card className={classes.card}>
                             <div className={classes.cardDetails}>
-                                <TeamDetails team={team} progress={progress}/>
+                                <TeamDetails color={colors[index][500]} team={team} maxProgress={(() => {
+                                    // console.log("maxAns", maxAns, team.teamUUID);
+                                    return maxAns[team.teamUUID];
+                                })()}
+                                             progress={teamAns[team.teamUUID] || 0}/>
                             </div>
                         </Card>
                     </Grid>
@@ -169,7 +173,7 @@ const RoundOne = ({history}) => {
             </Grid>
 
             <footer className={classes.footer} style={{left: theme.spacing(3),}}>
-                <Timer size={80} value={progress}/>
+                <Timer size={80} value={timerProgress} time={timerProgress * progressCoefficient}/>
             </footer>
         </>
     );

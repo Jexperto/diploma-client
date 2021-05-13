@@ -19,23 +19,31 @@ const RoundOne = ({history}) => {
     const qta = useSelector(state => state.questions); //questionsToAnswer
     const player = useSelector(state => state.currentUser);
     const round = useSelector(state => state.currentRound);
+    //const teamAnswersCount = useSelector(state => state.teamAnswers);
     const [count, setCount] = React.useState(0);
-    if (!Array.isArray(qta)){
-        return(
+    // React.useEffect(()=>{
+    //     if (teamAnswersCount > count)
+    //         setCount(teamAnswersCount)
+    // })
+    //console.log("teamAnswersCount:", teamAnswersCount)
+    console.log(qta)
+    console.log("count:", count)
+    if (!Array.isArray(qta)) {
+        return (
             <div className={classes.center}>
-                <CircularProgress color={"primary" }/>
+                <CircularProgress color={"primary"}/>
             </div>
         )
     }
-    if (round<0){
-        return(
+    if (round < 0) {
+        return (
             <Redirect to={"/round2user"}/>
         )
     }
-    if (count >= qta.length){
+    if (count >= qta.length) {
         return (
             <div className={classes.center}>
-                <CircularProgress color={"primary" }/>
+                <CircularProgress color={"primary"}/>
             </div>
         );
     }
@@ -77,9 +85,13 @@ const RoundOne = ({history}) => {
                             color="primary"
                             className={classes.lobbyButton}
                             onClick={() => {
-                                ws.sendMessage("wr_ans", {pl_id: player, question_id: qID, string: ansRef.current.value ? ansRef.current.value: "" })
-                                setCount(count+1)
-                                ansRef.current.value=""
+                                ws.sendMessage("wr_ans", {
+                                    pl_id: player,
+                                    question_id: qID,
+                                    string: ansRef.current.value ? ansRef.current.value : ""
+                                })
+                                setCount(count + 1)
+                                ansRef.current.value = ""
                             }}>
                             Подтвердить
                         </Button>

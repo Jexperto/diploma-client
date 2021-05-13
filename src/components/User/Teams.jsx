@@ -12,11 +12,12 @@ import {useSelector} from "react-redux";
 import {getWebSocket} from "../../store/websocket";
 import {teamsStyles} from "../team/styles";
 import {Redirect} from "react-router-dom";
+import {useColors} from "../../resources/colors";
 
 const useStyles = teamsStyles();
-const colors = [
-    "blue", "red", "orange", "purple"
-];
+// const colors = [
+//     "blue", "red", "orange", "purple"
+// ];
 
 
 const Teams = ({history}) => {
@@ -26,6 +27,7 @@ const Teams = ({history}) => {
     const selTeams = useSelector(state => state.teams);
     const selUsers = useSelector(state => state.users);
     const code = useSelector(state => state.code);
+    const colors = React.useMemo(()=>useColors(code),[])
     let tempTeams = {}
 
     for (let key in selTeams) {
@@ -38,7 +40,7 @@ const Teams = ({history}) => {
     }
     const teamsArray = Object.keys(tempTeams).map((key) => {
         return {teamUUID: key, teamName: tempTeams[key].teamName, users: tempTeams[key].users}
-    });
+    }).sort((a, b) => { return (a.teamUUID<b.teamUUID?-1:1)});
     //console.log(teamsArray.sort((a, b) => { return (a.teamUUID<b.teamUUID?-1:1)}))
 
     if (selRound>0){
@@ -60,7 +62,7 @@ const Teams = ({history}) => {
                 {teamsArray.map((data, index) => (
                     <Grid item xs={12} lg={6} key={data.teamUUID}>
                         <Team teamUUID={data.teamUUID} teamName={`${data.teamName}`}
-                              users={data.users} color={colors[index]}>
+                              users={data.users} color={colors[index][500]}>
                             <Button aria-label="join" onClick={() =>
                                 ws.sendMessage("join_t",{team_id:data.teamUUID})
                             }>

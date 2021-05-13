@@ -16,7 +16,6 @@ import MuiAccordionDetails from '@material-ui/core/AccordionDetails';
 import {ClickAwayListener, Fab, Grid, IconButton, Paper} from "@material-ui/core";
 import ApplicationBar from "../AppBar";
 import {Add, CloseOutlined, CloseRounded, Done, PlayArrow, PlusOne} from "@material-ui/icons";
-import Team from "../team/Team";
 import theme from "../../resources/theme";
 import {useDispatch, useSelector} from "react-redux";
 import {initQuestionSetDispatch} from "../../store/actions/messageActions";
@@ -225,8 +224,8 @@ const AddQuestions = ({history}) => {
         question: "",
         answer: ""
     }]);
-    const [expanded, setExpanded] = React.useState(questions.length-1);
-    const [canAddQuestions, setCanAddQuestions] = React.useState(questions.length!==1);
+    const [expanded, setExpanded] = React.useState(questions.length - 1);
+    const [canAddQuestions, setCanAddQuestions] = React.useState(!(questions.length === 1 && (!questions[0].question || questions[0].question === "") && (!questions[0].answer || questions[0].answer === "")));
     window.qst = questions;
     const handleAccordionChange = (panel) => (event) => {
         if (event.target.attributes.clickable && canAddQuestions) {
@@ -317,9 +316,11 @@ const AddQuestions = ({history}) => {
                 <footer className={classes.footer} style={{right: theme.spacing(3),}}>
                     <Container className={classes.paper}>
                         <Fab style={{marginBottom: theme.spacing(2)}} color="secondary" aria-label="play"
-                             onClick={() => {if (canAddQuestions){
-                                 dispatch(initQuestionSetDispatch(questions))
-                                 history.push("/adminLobby")}
+                             onClick={() => {
+                                 if (canAddQuestions) {
+                                     dispatch(initQuestionSetDispatch(questions))
+                                     history.push("/adminLobby")
+                                 }
                              }}>
                             <Done/>
                         </Fab>

@@ -25,7 +25,6 @@ const Lobby = ({history, code, teams}) => {
     const dispatch = useDispatch();
     const selector = useSelector(state => state.questions);
     const [errorOpen, setErrorOpen] = React.useState(false);
-
     const handleErrorClose = (event, reason) => {
         if (reason === 'clickaway') {
             return;
@@ -59,7 +58,7 @@ const Lobby = ({history, code, teams}) => {
                                 event.preventDefault()
                                 if ((Array.isArray(selector) && selector[0].question !== undefined && selector[0].answer !== undefined)) {
                                     websocket.sendMessage("create", {nick: ""})
-                                    websocket.sendMessage("add_t", {team_names: ["Лол", "Кек", "Чебурек", "Баклажан"]})
+                                    websocket.sendMessage("add_t", {team_names: ["Команда 1", "Команда 2"]})
                                     const questions = [...selector];
                                     dispatch(initQuestionSetDispatch(undefined));
                                     questions.forEach((it)=>{

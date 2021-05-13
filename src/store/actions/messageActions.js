@@ -41,6 +41,22 @@ const questionDispatch = (questionUUID, questionText, answer) => {
         answer,
     };
 }
+
+const teamAddedWrongAnswerDispatch = (userUUID, questionUUID) => {
+    console.log(userUUID);
+    return {
+        type: "TEAM_WR_ANS",
+        userUUID,
+    };
+}
+const userAddedWrongAnswerDispatch = (userUUID) => {
+    console.log(userUUID);
+    return {
+        type: "USER_TEAM_WR_ANS",
+        userUUID,
+    };
+}
+
 export const userQuestionDispatch = (questions) => {
     console.log(questions);
 
@@ -50,7 +66,7 @@ export const userQuestionDispatch = (questions) => {
     };
 }
 
-const currentQuestionDispatch = (questionUUID, answers, questionText="", teamUUID="") => {
+const currentQuestionDispatch = (questionUUID, answers, questionText = "", teamUUID = "") => {
     console.log(questionUUID, answers, questionText, teamUUID);
 
     return {
@@ -91,6 +107,16 @@ const teamDispatch = (teams) => {
     }
 }
 
+const teamColorDispatch = (teamUUID,color) => {
+    console.log(teamUUID,color);
+
+    return {
+        type: "TEAM_TO_COLOR",
+        teamUUID,color
+    }
+}
+
+
 const setUserJoinTeamDispatch = (users) => {
 
     return {
@@ -119,6 +145,15 @@ const timerDispatch = (value) => {
     }
 }
 
+const teamsWithQuestionsDispatch = (values) => {
+    console.log(values);
+
+    return {
+        type: "TWQ",
+        values,
+    }
+}
+
 const pointsDispatch = (teamUUID, value) => {
     console.log(teamUUID, value);
 
@@ -129,12 +164,51 @@ const pointsDispatch = (teamUUID, value) => {
     }
 }
 
-const teamAnswerDispatch = (teamUUID, questionUUID, correct) => {
-    console.log(teamUUID, questionUUID, correct);
+const pointsIncDispatch = (teamUUID,questionUUID, correct) => {
+    console.log(teamUUID, correct);
 
     return {
-        type: "TEAM_ANSWERED",
+        type: "POINTS_INCREMENTED",
+        teamUUID,
         questionUUID,
+        correct,
+    }
+}
+
+const maxAnsDispatch = (teams) => {
+    console.log(teams);
+    const maxAns = {}
+    teams.forEach((team) => {
+        console.log(team)
+        maxAns[team.team_id] = team.value;
+        console.log(team.team_id, team.value)
+    })
+    console.log(maxAns)
+
+    return {
+        type: "MAX_ANS",
+        maxAns
+    }
+}
+
+const teamAnswerDispatch = (teamUUID, questionUUID, answer, correct) => {
+    console.log("teamAnswerDispatch", teamUUID, questionUUID, answer, correct);
+    return {
+        type: "TEAM_ANSWERED",
+        teamUUID,
+        questionUUID,
+        answer,
+        correct,
+    }
+}
+
+const userAnswerDispatch = (userUUID, questionUUID, answer, correct) => {
+    console.log("userAnswerDispatch", userUUID, questionUUID, answer, correct);
+    return {
+        type: "USER_ANSWERED",
+        userUUID,
+        questionUUID,
+        answer,
         correct,
     }
 }
@@ -144,6 +218,7 @@ export {
     roomDispatch,
     joinDispatch,
     pointsDispatch,
+    pointsIncDispatch,
     questionDispatch,
     roundDispatch,
     errorDispatch,
@@ -152,6 +227,12 @@ export {
     userDispatch,
     userJoinTeamDispatch,
     teamAnswerDispatch,
+    userAnswerDispatch,
     initQuestionSetDispatch,
     setUserJoinTeamDispatch,
+    teamAddedWrongAnswerDispatch,
+    userAddedWrongAnswerDispatch,
+    maxAnsDispatch,
+    teamColorDispatch,
+    teamsWithQuestionsDispatch,
 }

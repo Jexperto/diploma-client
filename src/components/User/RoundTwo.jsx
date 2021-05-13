@@ -60,16 +60,15 @@ const UserTask = (props) => {
     const rootRef = React.createRef();
     const [lastHeight, setLastHeight] = React.useState(0);
     const [idState, setIdState] = React.useState("");
-    //console.log("qId: ",questionID)
+    React.useEffect(()=>{
+        if (questionID !== idState) {
+            setWaiting(false);
+            setIdState(questionID);
+        }
+    },[questionID,idState])
     if (waiting)
         return (
-            <div className={classes.waiting} style={{height: `${lastHeight}px`}} onLoad={() => {
-                if (questionID !== idState) {
-                    setWaiting(false);
-                    setIdState(questionID);
-                }
-            }
-            }>
+            <div className={classes.waiting} style={{height: `${lastHeight}px`}}>
                 <CircularProgress color={"primary"}/>
             </div>
 

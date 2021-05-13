@@ -6,14 +6,40 @@ const initialState = {
     currentUser: "", //userUUID
     code: "",
     teams: {}, // {teamUUID : teamName}
-    questions: {}, // {questionUUID : {questionText, answer} }  -- [{question_id: "", string:""}]
-    currentQuestion: {}, // {questionUUID, questionText, [id,answer]} -- {teamUUID : {questionUUID, answers}}
+    teamToColor: {},
+    questions: {}, // {questionUUID : {questionText, answer} }  --  [{question_id: "", string:""}]
+    currentQuestion: {}, // {teamUUID : {questionUUID, questionText, answers}}  --  {questionUUID, questionText, [id,answer]}
     timer: 0,
     currentRound: 0,
     error: "",
     points: {}, // {teamUUID: value}
-    teamAnswer: {} //{teamUUID,questionUUID, correct}
+    maxAns: {}, // {teamUUID: value}
+    teamAnswers: {}, //[{teamUUID,questionUUID,answer, correct}]  (for second round)-- round1 -> {teamUUID:count} (for first round)
+    pointsModifiers: {right: 1000, wrong: 500},
+    teamsWithQuestions: [] // [{"team_id":"123","question_ids":["123","123"]}]
 };
+
+function getTeamByQuestion(questionUUID, state) {
+    console.log("------------")
+    if (state.hasOwnProperty("teamsWithQuestions")) {
+        const TWQ = state?.teamsWithQuestions;
+        for (const index in TWQ) {
+            const team = TWQ[index]
+            console.log("team --", team)
+            if (team.hasOwnProperty("question_ids")) {
+                const questions = team?.question_ids;
+                console.log("questions --", questions)
+                for (const question in questions) {
+                    console.log("question --", questions[question])
+                    if (questions[question] === questionUUID) {
+                        return team?.team_id;
+                    }
+                }
+            }
+        }
+    }
+    return undefined;
+}
 
 const reduce = (state = initialState, action) => {
     switch (action.type) {
@@ -55,6 +81,13 @@ const reduce = (state = initialState, action) => {
                 ...state,
                 questions: newQuestion
             };
+        case "TEAM_TO_COLOR":
+            const newTeamToColor = {...state.teamToColor}
+            newTeamToColor[action.teamUUID] = action.color;
+            return {
+                ...state,
+                teamToColor: newTeamToColor
+            };
         case "CURRENT_QUESTION_ADDED":
             if (action.teamUUID) {
                 const newQuestion = {...state.currentQuestion}
@@ -70,7 +103,11 @@ const reduce = (state = initialState, action) => {
             }
             return {
                 ...state,
-                currentQuestion: {questionUUID:action.questionUUID, questionText:action.questionText, answers:action.answers}
+                currentQuestion: {
+                    questionUUID: action.questionUUID,
+                    questionText: action.questionText,
+                    answers: action.answers
+                }
             };
         case "ROUND_STARTED":
             return {
@@ -93,7 +130,7 @@ const reduce = (state = initialState, action) => {
             };
         case "USER_TEAMS_SET":
             const userTeams = {}
-            action.users.forEach((user)=>{
+            action.users.forEach((user) => {
                 userTeams[user.pl_id] = {userName: user.nick, teamUUID: user.team_id}
             })
             return {
@@ -103,7 +140,7 @@ const reduce = (state = initialState, action) => {
         case "TEAM_JOINED":
             const updateUserTeam = {...state.users,}
             const userName = updateUserTeam[action.userUUID].userName
-            updateUserTeam[action.userUUID] = {userName: userName,teamUUID: action.teamUUID}
+            updateUserTeam[action.userUUID] = {userName: userName, teamUUID: action.teamUUID}
             return {
                 ...state,
                 users: updateUserTeam,
@@ -115,17 +152,64 @@ const reduce = (state = initialState, action) => {
             };
         case "POINTS_CHANGED":
             const newPoints = {...state.points}
-            newPoints[action.teamUUID]+=action.value
+            newPoints[action.teamUUID] += action.value
             return {
                 ...state,
                 points: newPoints
             };
-        case "TEAM_ANSWERED":
+        case "POINTS_INCREMENTED":
+            const newIncPoints = {...state.points}
+            let team;
+            let pointsRes = 0;
+            if (action.correct === true) {
+                team = action.teamUUID;
+                pointsRes = {...state.pointsModifiers}.right;
+            } else {
+                team = getTeamByQuestion(action.questionUUID, state);
+                pointsRes = {...state.pointsModifiers}.wrong;
+            }
+            newIncPoints[team] = (newIncPoints[team] + pointsRes) || pointsRes;
+            console.log("newIncPoints", newIncPoints, "pointsRes", pointsRes)
             return {
                 ...state,
+                points: newIncPoints
+            };
+        case "TEAM_ANSWERED":
+            const newTeamAnswers = (Array.isArray(state.teamAnswers)) ? {...state}.teamAnswers : [];
+            newTeamAnswers.push({
                 teamUUID: action.teamUUID,
                 questionUUID: action.questionUUID,
-                correct: action.correct,
+                answer: action.answer,
+                correct: action.correct
+            })
+            return {
+                ...state,
+                teamAnswers: newTeamAnswers,
+            };
+        case "TEAM_WR_ANS":
+            const roundOneTeamAns = {...state.teamAnswers}
+            const teamUUID = state.users[action.userUUID].teamUUID;
+            if (!teamUUID)
+                return;
+            roundOneTeamAns[teamUUID] = ++roundOneTeamAns[teamUUID] || 1;
+            return {
+                ...state,
+                teamAnswers: roundOneTeamAns,
+            };
+        case "USER_TEAM_WR_ANS":
+            return {
+                ...state,
+                teamAnswers: ++state.teamAnswers || 1,
+            };
+        case "MAX_ANS":
+            return {
+                ...state,
+                maxAns: action.maxAns,
+            }
+        case "TWQ":
+            return {
+                ...state,
+                teamsWithQuestions: action.values,
             };
         default:
             return state;

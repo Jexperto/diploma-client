@@ -18,7 +18,8 @@ import AddQuestions from "../Admin/AddQuestions";
 import RoundTwoAdmin from "../Admin/RoundTwo";
 import {Provider} from "react-redux";
 import store from "../../store/store";
-import Connection from "../../connection";
+import Intermission from "../Admin/Intermission";
+import Results from "../Admin/Results";
 
 // const websocketConnection = new Connection("admin",store.dispatch);
  window.store = store;
@@ -42,6 +43,9 @@ function App() {
                     <Route path={'/adminTeams'} component={AdminTeams}/>
                     <Route path={'/teams'} component={Teams}/>
                     <Route path={'/userFinish'} component={UserFinish}/>
+                    <Route path={'/intermission'} component={Intermission}/>
+                    <Route path={'/results'} component={Results}/>
+
 
                 </Switch>
             </Router>

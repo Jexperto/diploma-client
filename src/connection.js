@@ -11,7 +11,11 @@ import {
     timerDispatch,
     userDispatch,
     userJoinTeamDispatch,
-    teamAnswerDispatch, setUserJoinTeamDispatch
+    teamAnswerDispatch,
+    setUserJoinTeamDispatch,
+    teamAddedWrongAnswerDispatch,
+    userAddedWrongAnswerDispatch,
+    maxAnsDispatch, pointsIncDispatch, userAnswerDispatch, teamsWithQuestionsDispatch
 } from "./store/actions/messageActions";
 
 class Connection {
@@ -25,7 +29,7 @@ class Connection {
     constructor(dispatch, address = "localhost:8080", secure = false) {
         this.dispatch = dispatch
         this.#address = address;
-        this.#props["add_question"]=[];
+        this.#props["add_question"] = [];
 
     }
 
@@ -82,9 +86,13 @@ class Connection {
                         this.dispatch(teamDispatch(teams));
                         return;
                     }
+                    case "get_twq": {
+                        this.dispatch(teamsWithQuestionsDispatch(obj.values));
+                        return;
+                    }
                     case "start": {
-                        this.dispatch(roundDispatch(obj.num));
                         this.dispatch(timerDispatch(store.timer));
+                        this.dispatch(roundDispatch(obj.num));
                         this.#props[obj.type] = undefined;
                         return;
                     }
@@ -96,16 +104,29 @@ class Connection {
                         this.dispatch(currentQuestionDispatch(obj.question_id, obj.answers, undefined, obj.team_id));
                         return;
                     }
+                    case "wr_ans": {
+                        this.dispatch(teamAddedWrongAnswerDispatch(obj.pl_id));
+                        return;
+                    }
                     case "tres": {
-                        this.dispatch(teamAnswerDispatch(obj.team, obj.question_id, obj.correct));
+                        this.dispatch(teamAnswerDispatch(obj.team_id, obj.question_id, obj.answer, obj.correct));
+                        this.dispatch(pointsIncDispatch(obj.team_id,obj.question_id, obj.correct));
                         return;
                     }
-                    case "pupd": {
-                        this.dispatch(pointsDispatch(obj.team_id, obj.value));
+                    case "plres": {
+                        this.dispatch(userAnswerDispatch(obj.pl_id, obj.question_id, obj.answer, obj.correct));
                         return;
                     }
+                    // case "pupd": {
+                    //     this.dispatch(pointsDispatch(obj.team_id, obj.value));
+                    //     return;
+                    // }
                     case "rend": {
                         this.dispatch(roundDispatch(-obj.num));
+                        return;
+                    }
+                    case "max_ans": {
+                        this.dispatch(maxAnsDispatch(obj.teams));
                         return;
                     }
                 }
@@ -116,7 +137,7 @@ class Connection {
                     case "join": {
                         this.dispatch(joinDispatch(store.code, obj.pl_id, store.nick));
                         this.dispatch(setUserJoinTeamDispatch(obj.players))
-                        this.#props["join_t"]= {pl_id:obj.pl_id};
+                        this.#props["join_t"] = {pl_id: obj.pl_id};
                         this.#props[obj.type] = undefined;
                         return;
                     }
@@ -143,6 +164,10 @@ class Connection {
                         //     questions[obj.questions[i].question_id] = obj.questions[i].string;
                         // }
                         this.dispatch(userQuestionDispatch(obj.questions));
+                        return;
+                    }
+                    case "wr_ans": {
+                        this.dispatch(userAddedWrongAnswerDispatch(obj.pl_id));
                         return;
                     }
                     case "timer_elapsed": {
@@ -227,6 +252,10 @@ class Connection {
                         this.socket.send(JSON.stringify({type: type, admin_id: props.admin_id}))
                         return;
                     }
+                    case "get_twq": {
+                        this.socket.send(JSON.stringify({type: type}))
+                        return;
+                    }
                     case "add_question": {
                         this.#props[type].push(props)
                         this.socket.send(JSON.stringify({
@@ -278,7 +307,7 @@ class Connection {
                         return;
                     }
                     case "join_t": {
-                       // this.#props[type] = props
+                        // this.#props[type] = props
                         this.socket.send(JSON.stringify({
                             type: type,
                             team_id: props.team_id
