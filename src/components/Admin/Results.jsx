@@ -15,8 +15,8 @@ const renderCustomBarLabel = ({payload, x, y, width, height, value}) => {
     return <text x={x + width / 2} y={y} fill="#666" textAnchor="middle" dy={-6}>{`${value}`}</text>;
 };
 
- const selTeam = {"1": "Команда 1", "2": "Команда 2"}
- const selPoints = {"1": 10000, "2": 5500}
+ //const selTeam = {"1": "Команда 1", "2": "Команда 2"}
+ //const selPoints = {"1": 10000, "2": 5500}
 const teamColorSelector = state => state.teamToColor;
 const pointSelector = state => state.points;
 const teamSelector =  state => state.teams;
@@ -26,8 +26,8 @@ const Results = ({history}) => {
     const colors = useColors();
     const barRef = useRef();
     const teamToColor = useSelector(teamColorSelector);
-    //const selPoints = useSelector(pointSelector);
-    //const selTeam = useSelector(teamSelector);
+    const selPoints = useSelector(pointSelector);
+    const selTeam = useSelector(teamSelector);
     const [pointsArray, setPointsArray] = useState([]);
     React.useEffect(() => {
         setPointsArray(Object.keys(selPoints).map((key) => {
