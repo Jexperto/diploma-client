@@ -20,6 +20,7 @@ import {Provider} from "react-redux";
 import store from "../../store/store";
 import Intermission from "../Admin/Intermission";
 import Results from "../Admin/Results";
+import About from "../About";
 
 // const websocketConnection = new Connection("admin",store.dispatch);
  window.store = store;
@@ -45,6 +46,7 @@ function App() {
                     <Route path={'/userFinish'} component={UserFinish}/>
                     <Route path={'/intermission'} component={Intermission}/>
                     <Route path={'/results'} component={Results}/>
+                    <Route path={'/about'} component={About}/>
 
 
                 </Switch>

@@ -23,7 +23,7 @@ const round1Styles = makeStyles((theme) => ({
         flexGrow: 1
     },
     footer: {
-        margin: theme.spacing(1), // You might not need this now
+        margin: theme.spacing(1),
         position: "fixed",
         bottom: theme.spacing(2),
 

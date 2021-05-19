@@ -8,18 +8,6 @@ import {Paper} from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
 import AllInclusive from "@material-ui/icons/AllInclusive";
 
-function handleConnect(e){
-    console.log("Connect was clicked");
-
-}
-function handleRules(e){
-    console.log("Rules was clicked");
-}
-function handleExit(e){
-    console.log("Exit was clicked");
-}
-
-
 
 const Lobby = ({history}) => {
     const classes = useStyles();
@@ -69,7 +57,10 @@ const Lobby = ({history}) => {
                             color="primary"
                             variant="outlined"
                             className={classes.lobbyButton}
-                            onClick={handleRules}
+                            onClick={ (event => {
+                                event.preventDefault()
+                                history.push(`/about`)
+                            })}
                         >
                             Правила
                         </Button>
@@ -79,7 +70,6 @@ const Lobby = ({history}) => {
                             size="large"
                             color="primary"
                             className={classes.lobbyButton}
-                            onClick={handleExit}
                         >
                             Выход
                         </Button>

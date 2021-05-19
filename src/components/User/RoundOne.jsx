@@ -26,9 +26,9 @@ const RoundOne = ({history}) => {
     //         setCount(teamAnswersCount)
     // })
     //console.log("teamAnswersCount:", teamAnswersCount)
-    console.log(qta)
-    console.log("count:", count)
+
     if (!Array.isArray(qta)) {
+        console.log("qta",qta)
         return (
             <div className={classes.center}>
                 <CircularProgress color={"primary"}/>
@@ -41,6 +41,7 @@ const RoundOne = ({history}) => {
         )
     }
     if (count >= qta.length) {
+        console.log("count",count)
         return (
             <div className={classes.center}>
                 <CircularProgress color={"primary"}/>

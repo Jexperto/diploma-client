@@ -57,8 +57,9 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
     },
     footer: {
-        backgroundColor: theme.palette.background.paper,
-        padding: theme.spacing(6),
+        margin: theme.spacing(1),
+        position: "fixed",
+        bottom: theme.spacing(2),
     },
     top: {
         position:"absolute",

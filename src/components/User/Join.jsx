@@ -12,6 +12,7 @@ import {getWebSocket} from "../../store/websocket";
 import {useDispatch, connect} from "react-redux";
 import {joinDispatch} from "../../store/actions/messageActions";
 import {Redirect} from "react-router-dom";
+import theme from "../../resources/theme";
 
 
 const Join = ({history, currentUser}) => {
@@ -77,6 +78,15 @@ const Join = ({history, currentUser}) => {
                 </form>
             </div>
         </Container>
+            <footer className={classes.footer} style={{left: theme.spacing(3),}}>
+                <Container>
+                    <Button variant="outlined" color="secondary" onClick={() => {
+                        history.push("/lobby")
+                    }}>
+                        Назад
+                    </Button>
+                </Container>
+            </footer>
         </div>
     );
 }
