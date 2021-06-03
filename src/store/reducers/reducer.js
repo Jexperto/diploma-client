@@ -11,7 +11,7 @@ const initialState = {
     currentQuestion: {}, // {teamUUID : {questionUUID, questionText, answers}}  --  {questionUUID, questionText, [id,answer]}
     timer: 0,
     currentRound: 0,
-    error: "",
+    error: {},
     points: {}, // {teamUUID: value}
     maxAns: {}, // {teamUUID: value}
     teamAnswers: {}, //[{teamUUID,questionUUID,answer, correct}]  (for second round)-- round1 -> {teamUUID:count} (for first round)

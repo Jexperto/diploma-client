@@ -1,5 +1,4 @@
 import {createStore} from "redux";
-import Connection from "../connection"
 import reduce, {initialState} from "./reducers/reducer";
 
 let store = undefined;

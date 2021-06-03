@@ -1,4 +1,4 @@
-import Connection from "../connection";
+import Connection from "../utils/connection";
 import store from "./store";
 
 let websocket = new Connection(store.dispatch);

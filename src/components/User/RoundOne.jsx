@@ -19,7 +19,8 @@ const RoundOne = ({history}) => {
     const qta = useSelector(state => state.questions); //questionsToAnswer
     const player = useSelector(state => state.currentUser);
     const round = useSelector(state => state.currentRound);
-    //const teamAnswersCount = useSelector(state => state.teamAnswers);
+    const error = useSelector(state => state.error);
+    const teamAnswers = useSelector(state => state.teamAnswers);
     const [count, setCount] = React.useState(0);
     // React.useEffect(()=>{
     //     if (teamAnswersCount > count)

@@ -16,7 +16,7 @@ import {
     teamAddedWrongAnswerDispatch,
     userAddedWrongAnswerDispatch,
     maxAnsDispatch, pointsIncDispatch, userAnswerDispatch, teamsWithQuestionsDispatch
-} from "./store/actions/messageActions";
+} from "../store/actions/messageActions";
 
 class Connection {
     #address;
@@ -57,7 +57,7 @@ class Connection {
         const store = this.#props[obj.type];
         console.log("Received:", obj)
         if (obj.type === "error") {
-            this.dispatch(errorDispatch(obj.err_desc));
+            this.dispatch(errorDispatch(obj));
             return;
         }
         switch (this.#mode) {
