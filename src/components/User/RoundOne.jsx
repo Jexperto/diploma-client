@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Typography from '@material-ui/core/Typography';
@@ -21,28 +21,32 @@ const RoundOne = ({history}) => {
     const round = useSelector(state => state.currentRound);
     const error = useSelector(state => state.error);
     const teamAnswers = useSelector(state => state.teamAnswers);
+    const currentUserAnswerCount = useSelector(state => state.currentUserSuccessfulAnswersCount);
     const [count, setCount] = React.useState(0);
+    const [waiting, setWaiting] = React.useState(false);
     // React.useEffect(()=>{
     //     if (teamAnswersCount > count)
     //         setCount(teamAnswersCount)
     // })
     //console.log("teamAnswersCount:", teamAnswersCount)
 
-    if (!Array.isArray(qta)) {
-        console.log("qta",qta)
-        return (
-            <div className={classes.center}>
-                <CircularProgress color={"primary"}/>
-            </div>
-        )
-    }
+    React.useEffect(() => {
+        if (error.payload==="wr_ans"){
+            setWaiting(false);
+        }
+        if (currentUserAnswerCount>count){
+            setCount(currentUserAnswerCount)
+            setWaiting(false);
+        }
+    }, [currentUserAnswerCount,error,count])
+
     if (round < 0) {
         return (
             <Redirect to={"/round2user"}/>
         )
     }
-    if (count >= qta.length) {
-        console.log("count",count)
+
+    if (waiting===true || count >= qta.length || !Array.isArray(qta)) {
         return (
             <div className={classes.center}>
                 <CircularProgress color={"primary"}/>
@@ -92,7 +96,7 @@ const RoundOne = ({history}) => {
                                     question_id: qID,
                                     string: ansRef.current.value ? ansRef.current.value : ""
                                 })
-                                setCount(count + 1)
+                                setWaiting(true)
                                 ansRef.current.value = ""
                             }}>
                             Подтвердить

@@ -15,6 +15,7 @@ const initialState = {
     points: {}, // {teamUUID: value}
     maxAns: {}, // {teamUUID: value}
     teamAnswers: {}, //[{teamUUID,questionUUID,answer, correct}]  (for second round)-- round1 -> {teamUUID:count} (for first round)
+    currentUserSuccessfulAnswersCount: 0,
     pointsModifiers: {right: 1000, wrong: 500},
     teamsWithQuestions: [] // [{"team_id":"123","question_ids":["123","123"]}]
 };
@@ -197,6 +198,12 @@ const reduce = (state = initialState, action) => {
                 teamAnswers: roundOneTeamAns,
             };
         case "USER_TEAM_WR_ANS":
+            if (action.userUUID===state.currentUser)
+                return  {
+                    ...state,
+                    currentUserSuccessfulAnswersCount: ++state.currentUserSuccessfulAnswersCount || 1,
+                    teamAnswers: ++state.teamAnswers || 1,
+                };
             return {
                 ...state,
                 teamAnswers: ++state.teamAnswers || 1,
