@@ -26,7 +26,7 @@ class Connection {
     #queue = [];
     #addQuestionCounter = 0;
 
-    constructor(dispatch, address = "localhost:8080", secure = false) {
+    constructor(dispatch, address = "45.90.35.227:8080", secure = false) {
         this.dispatch = dispatch
         this.#address = address;
         this.#props["add_question"] = [];
