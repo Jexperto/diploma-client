@@ -147,11 +147,14 @@ const RoundOne = ({history}) => {
             let team = teamsArray[idx]
             if (teamAns[team.teamUUID]!==undefined && maxAns[team.teamUUID]!==undefined && teamAns[team.teamUUID] === maxAns[team.teamUUID]) {
                 completeCount++;
+                console.log("completeCount", completeCount)
             }
             else break;
         }
-        if (completeCount===teamsArray.length)
+        if (completeCount===teamsArray.length){
             ws.sendMessage("skip")
+            console.log("ws.sendMessage(\"skip\")")
+        }
     }, [teamsArray, teamAns, maxAns]);
 
 
