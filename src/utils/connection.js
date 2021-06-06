@@ -288,6 +288,10 @@ class Connection {
                         this.socket.close()
                         return;
                     }
+                    case "skip": {
+                        this.socket.send(JSON.stringify({type: type}))
+                        return;
+                    }
                 }
                 return;
             }
