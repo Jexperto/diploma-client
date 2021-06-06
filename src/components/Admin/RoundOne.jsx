@@ -80,9 +80,9 @@ function Timer(props) {
 const TeamDetails = ({team, maxProgress, progress, color}) => {
     let value;
     if (!maxProgress || !progress)
-         value = 0;
-else
-         value = ((progress / maxProgress) ) * 100
+        value = 0;
+    else
+        value = ((progress / maxProgress)) * 100
 
 
     //const colorStyles = useStyles2({color: team.color || "rgb(189,12,150)"});
@@ -92,13 +92,13 @@ else
             <Typography component="h1" variant="h5">
                 {`${team.teamName}`}
             </Typography>
-           {/*<div className={`${classes.square}`} style={{background: color}}/>*/}
+            {/*<div className={`${classes.square}`} style={{background: color}}/>*/}
 
             <Box display="flex" alignItems="center">
                 <Box width="100%" mr={1}>
                     <LinearProgress classes={{
-                        colorPrimary: useTeamColorStyles({color:color}).colorPrimary,
-                        barColorPrimary:  useTeamColorStyles({color:color}).barColorPrimary
+                        colorPrimary: useTeamColorStyles({color: color}).colorPrimary,
+                        barColorPrimary: useTeamColorStyles({color: color}).barColorPrimary
                     }} variant="determinate" value={value ?? 100}/>
                 </Box>
                 <Box minWidth={35}>
@@ -126,7 +126,9 @@ const RoundOne = ({history}) => {
     const timer = useSelector(state => state.timer);
     const teamsArray = Object.keys(teams).map((key) => {
         return {teamUUID: key, teamName: teams[key]}
-    }).sort((a, b) => { return (a.teamUUID<b.teamUUID?-1:1)});
+    }).sort((a, b) => {
+        return (a.teamUUID < b.teamUUID ? -1 : 1)
+    });
     const progressCoefficient = React.useMemo(() => timer / 100.0, [timer]);
     const increment = React.useMemo(() => 1 / progressCoefficient / factor, [progressCoefficient]);
     const [timerProgress, setTimerProgress] = React.useState(100);
@@ -137,13 +139,27 @@ const RoundOne = ({history}) => {
         setTimeout(() => {
             clearInterval(interval);
         }, timer * 1000)
-    }, [timer,increment]);
+    }, [timer, increment]);
+
+    React.useEffect(() => {
+        let completeCount = 0;
+        for (let idx in teamsArray) {
+            let team = teamsArray[idx]
+            if (teamAns[team.teamUUID]!==undefined && maxAns[team.teamUUID]!==undefined && teamAns[team.teamUUID] === maxAns[team.teamUUID]) {
+                completeCount++;
+            }
+            else break;
+        }
+        if (completeCount===teamsArray.length)
+            ws.sendMessage("skip")
+    }, [teamsArray, teamAns, maxAns]);
 
 
     if (round < 0 || isEmpty(maxAns)) {
-        if (round === -1){
+        if (round === -1) {
             ws.sendMessage("get_twq")
-            return (<Redirect to={"/intermission"}/>);}
+            return (<Redirect to={"/intermission"}/>);
+        }
         return (
             <div className={globalStyles.center}>
                 <CircularProgress color={"primary"}/>
@@ -156,7 +172,7 @@ const RoundOne = ({history}) => {
             <CssBaseline/>
             <ApplicationBar title={"Подготовка командами ответов"}/>
             <Grid container spacing={4}>
-                {teamsArray.map((team,index) => (
+                {teamsArray.map((team, index) => (
                     // {teams.map((team) => (
                     <Grid key={team.teamUUID} item xs={12} lg={6}>
                         <Card className={classes.card}>
